@@ -1,0 +1,63 @@
+# Gitignore para Proyecto Power BI
+
+# Archivos de Power BI temporales
+*.tmp
+*.bak
+*.pbix.backup
+~$*.pbix
+
+# Archivos de bloqueo de Power BI
+*.pbix.lock
+
+# Archivos de configuración local de Power BI
+.pbi/
+
+# Archivos temporales de Windows
+Thumbs.db
+Desktop.ini
+
+# Archivos del sistema macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Archivos temporales de Microsoft Office
+~$*
+*.tmp
+
+# Logs
+*.log
+logs/
+
+# Archivos de caché
+.cache/
+cache/
+
+# Archivos de configuración de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Variables de entorno
+.env
+.env.local
+.env.production
+
+# Archivos de respaldo automático
+*~
+*.orig
+
+# Archivos de datos sensibles (excluir datos reales si es necesario)
+# DATOS_EXTERNOS/**/*.xlsx
+# Descomentar línea anterior si los datos contienen información sensible
+
+# Versiones de desarrollo/testing
+*_test.pbix
+*_dev.pbix
+*_draft.pbix
+
+# Documentos temporales
+*.docx#
+*.xlsx#
+*.pptx#

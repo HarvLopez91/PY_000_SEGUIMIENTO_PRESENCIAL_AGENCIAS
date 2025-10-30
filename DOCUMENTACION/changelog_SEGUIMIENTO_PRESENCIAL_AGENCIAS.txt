@@ -1,0 +1,20 @@
+V1.1.0 indica la versión (mayor, menor, y corrección).
+La versión mayor (V1) cambia cuando se realiza un cambio significativo.
+La versión menor (V1.1) cambia para nuevas funcionalidades sin romper la compatibilidad.
+El número de corrección (V1.1.0) se usa para correcciones de errores.
+
+
+SEGUIMIENTO_PRESENCIAL_AGENCIAS_V1.0.0
+- **V1.0.0** (2023-09-20)
+  - Se recibe informe inicial creado con métricas básicas.
+- **V1.1.0** (2024-12-03)
+  - Se parametrizan las tipificaciones de cancelaciones registradas antes de la implementación del 21/10/2024, correspondientes a las categorías: "Cancelación - Servicio", "Cancelación - Precio" y "Cancelación - Beneficios".
+  - Se incluye la página "Consolidado Mes en Curso" y la medida "Promedio de Interacciones por Día".
+- **V1.1.1** (2024-12-03)
+  - Se registran datos de la licencia de ZoomCharts por vencimiento en los objetos visuales.
+  - Se optimizó la lógica utilizada para generar la columna Last_Update_Time (Fecha Actualización), eliminando pasos innecesarios como la creación de una tabla intermedia y la conversión de tipos redundantes. La nueva implementación crea directamente una tabla con una única columna que almacena la marca de tiempo local ajustada a la zona horaria UTC-5. Esta mejora reduce la complejidad del código y mejora la eficiencia del modelo.
+
+COMPROMISOS:
+- Retenciones de las agencias.
+- FCR angencias.
+- Mapeo descargas de Certificados vs Portal Clientes.
