@@ -7,12 +7,24 @@ POLÍTICA DE VERSIONADO (SemVer + "fuente única"):
 - Todos los demás archivos y scripts LEEN de VERSION
 - Nada hardcodeado en UI, README, CHANGELOG o scripts
 - Incrementos: bug→PATCH, nueva función compatible→MINOR, incompatible→MAJOR
+
+LECTURA SIMPLIFICADA:
+- VERSION = Path("VERSION").read_text().strip()
+- from src.versioning import VERSION
 """
 
 import re
 from pathlib import Path
 from datetime import datetime
 from typing import Tuple, Optional
+
+
+# LECTURA DIRECTA Y SIMPLE DE VERSIÓN (Paso 4)
+# Esta es la forma más directa de leer la versión desde cualquier código Python
+try:
+    VERSION = Path(__file__).parent.parent.joinpath("VERSION").read_text().strip()
+except FileNotFoundError:
+    VERSION = "0.0.0"  # Fallback si no existe VERSION
 
 
 class SemanticVersion:

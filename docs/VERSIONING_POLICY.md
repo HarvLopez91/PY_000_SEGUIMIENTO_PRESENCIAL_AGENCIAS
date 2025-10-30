@@ -35,19 +35,34 @@ python version_cli.py bump major "Cambio estructura datos"
 python version_cli.py powerbi
 ```
 
-### 2. Módulo de Versionado (`src/versioning.py`)
+### 2. Lectura Simple desde Código Python (Patrón Recomendado)
 
 ```python
-from src.versioning import get_version, bump_version
+# PATRÓN SIMPLE Y DIRECTO - Lectura de versión en cualquier script
+from pathlib import Path
+VERSION = Path("VERSION").read_text().strip()
 
-# Obtener versión actual
+# Uso inmediato
+print(f"Aplicación v{VERSION}")
+powerbi_file = f"SEGUIMIENTO_PRESENCIAL_AGENCIAS_V{VERSION}.pbix"
+```
+
+### 3. Módulo de Versionado (`src/versioning.py`)
+
+```python
+from src.versioning import get_version, bump_version, VERSION
+
+# Método 1: Constante importada
+print(f"Versión: {VERSION}")
+
+# Método 2: Función de conveniencia
 current = get_version()  # "0.1.0"
 
-# Incrementar versión programáticamente
+# Método 3: Incrementar versión programáticamente
 new_version = bump_version("minor", "Nueva funcionalidad")
 ```
 
-### 3. Actualizador de Referencias (`update_versions.py`)
+### 4. Actualizador de Referencias (`update_versions.py`)
 
 ```bash
 # Sincronizar todas las referencias de versión

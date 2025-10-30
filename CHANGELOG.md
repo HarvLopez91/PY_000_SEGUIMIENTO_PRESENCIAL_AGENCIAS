@@ -17,9 +17,17 @@ y este proyecto adhiere al [Versionado Semántico](https://semver.org/lang/es/).
 ## [Sin Publicar]
 
 ### Agregado
-- Sistema de versionado semántico con fuente única
-- CLI para gestión de versiones
-- Módulo `src/versioning.py` para manejo automatizado de versiones
+- Lectura simplificada de versión desde código Python
+- Patrón recomendado: `VERSION = Path("VERSION").read_text().strip()`
+- Demo completo en `src/example_usage.py` con 4 métodos de lectura
+- Script `simple_version_demo.py` con ejemplos prácticos
+- Constante VERSION exportada desde `src/versioning.py`
+- Documentación actualizada con patrones de lectura
+
+### Mejorado
+- Módulo `src/versioning.py` ahora exporta constante VERSION
+- Documentación en `docs/VERSIONING_POLICY.md` incluye patrón simple
+- Ejemplos de uso más prácticos y realistas
 
 ## [0.1.0] - 2025-10-30
 
