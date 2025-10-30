@@ -1,0 +1,75 @@
+[tool.pytest.ini_options]
+# Configuración de pytest para Seguimiento Presencial Agencias
+
+# Directorios de tests
+testpaths = ["tests"]
+
+# Patrón de archivos de test
+python_files = ["test_*.py", "*_test.py"]
+
+# Patrón de clases de test
+python_classes = ["Test*"]
+
+# Patrón de funciones de test
+python_functions = ["test_*"]
+
+# Opciones por defecto
+addopts = [
+    "-v",                    # Verbose output
+    "--tb=short",           # Formato de traceback corto
+    "--strict-markers",     # Marcadores estrictos
+    "--disable-warnings",   # Desactivar warnings en output
+]
+
+# Marcadores personalizados
+markers = [
+    "unit: marca tests unitarios",
+    "integration: marca tests de integración", 
+    "slow: marca tests que tardan más en ejecutar",
+    "version: marca tests relacionados con versionado",
+]
+
+# Configuración de cobertura
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__init__.py"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:"
+]
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+# Configuración de Black (formateador)
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directorios a excluir
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''

@@ -17,17 +17,18 @@ y este proyecto adhiere al [Versionado Semántico](https://semver.org/lang/es/).
 ## [Sin Publicar]
 
 ### Agregado
-- Lectura simplificada de versión desde código Python
-- Patrón recomendado: `VERSION = Path("VERSION").read_text().strip()`
-- Demo completo en `src/example_usage.py` con 4 métodos de lectura
-- Script `simple_version_demo.py` con ejemplos prácticos
-- Constante VERSION exportada desde `src/versioning.py`
-- Documentación actualizada con patrones de lectura
+- Sistema completo de testing y limpieza
+- Reglas estrictas: tests solo en `tests/`, limpieza con `make clean`
+- Suite de tests para versionado con 9 tests automatizados
+- Script PowerShell `Clean.ps1` para limpieza en Windows
+- Makefile con comandos: test, coverage, clean, lint
+- Configuración pytest en `pyproject.toml`
+- Documentación completa en `docs/TESTING_RULES.md`
 
-### Mejorado
-- Módulo `src/versioning.py` ahora exporta constante VERSION
-- Documentación en `docs/VERSIONING_POLICY.md` incluye patrón simple
-- Ejemplos de uso más prácticos y realistas
+### Mejorado  
+- Política de consulta antes de eliminar notas `.md` de revisión
+- Validación automática de consistencia de versiones
+- Herramientas multiplataforma (Make + PowerShell)
 
 ## [0.1.0] - 2025-10-30
 
