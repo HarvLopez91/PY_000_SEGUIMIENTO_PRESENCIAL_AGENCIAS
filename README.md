@@ -1,5 +1,8 @@
 # Seguimiento Presencial Agencias
 
+<!-- Versión dinámicamente leída desde VERSION - NO hardcodear -->
+**Versión**: 0.1.0
+
 ## 📋 Descripción del Proyecto
 
 Dashboard de Business Intelligence desarrollado en Power BI para el seguimiento y análisis de interacciones presenciales en agencias de La Ascensión S.A. Forma parte del Centro de Gestión del Cliente y proporciona métricas clave sobre atención presencial, cancelaciones y rendimiento de agencias.
