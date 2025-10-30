@@ -1,0 +1,91 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+venv_etl/
+ENV/
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+*.log.*
+etl_log_*.log
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Power BI
+*.pbix
+*.pbit
+*.pbids
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.backup
+
+# OS
+Thumbs.db
+desktop.ini
+
+# Credentials and secrets
+config.env
+.env.local
+secrets/
+credentials/
+*.key
+*.pem
+
+# Output files
+output/
+exports/
+*.csv
+*.xlsx
+*.pdf
+
+# Test files
+test_output/
+coverage/
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Documentation builds
+docs/_build/
+site/

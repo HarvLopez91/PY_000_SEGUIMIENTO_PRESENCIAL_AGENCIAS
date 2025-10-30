@@ -1,0 +1,487 @@
+-- =============================================
+-- Medidas DAX para Dashboard Seguimiento Presencial
+-- La Ascensión S.A.
+-- =============================================
+
+-- =============================================
+-- MEDIDAS BASE - CONTEO Y TOTALES
+-- =============================================
+
+-- Total de Interacciones
+TotalInteracciones = COUNTROWS(FactInteraccionesPresenciales)
+
+-- Total de Interacciones Completadas
+InteraccionesCompletadas = 
+CALCULATE(
+    COUNTROWS(FactInteraccionesPresenciales),
+    FactInteraccionesPresenciales[EstadoInteraccion] = "Completada"
+)
+
+-- Total de Interacciones Canceladas
+InteraccionesCanceladas = 
+CALCULATE(
+    COUNTROWS(FactInteraccionesPresenciales),
+    FactInteraccionesPresenciales[EstadoInteraccion] = "Cancelada"
+)
+
+-- Total de Cancelaciones (tabla separada)
+TotalCancelaciones = COUNTROWS(FactCancelaciones)
+
+-- Total de Clientes Únicos
+ClientesUnicos = DISTINCTCOUNT(FactInteraccionesPresenciales[ID_Cliente])
+
+-- Total de Asesores Activos
+AsesoresActivos = 
+CALCULATE(
+    DISTINCTCOUNT(FactInteraccionesPresenciales[ID_Asesor]),
+    FactInteraccionesPresenciales[EstadoInteraccion] = "Completada"
+)
+
+-- Total de Agencias con Actividad
+AgenciasConActividad = DISTINCTCOUNT(FactInteraccionesPresenciales[ID_Agencia])
+
+-- =============================================
+-- MEDIDAS DE TASA Y PORCENTAJE
+-- =============================================
+
+-- Tasa de Completación
+TasaCompletacion = 
+DIVIDE(
+    [InteraccionesCompletadas],
+    [TotalInteracciones],
+    0
+)
+
+-- Formato de Tasa de Completación
+TasaCompletacion% = 
+FORMAT([TasaCompletacion], "0.00%")
+
+-- Tasa de Cancelación
+TasaCancelacion = 
+DIVIDE(
+    [TotalCancelaciones],
+    [TotalInteracciones] + [TotalCancelaciones],
+    0
+)
+
+-- Formato de Tasa de Cancelación
+TasaCancelacion% = 
+FORMAT([TasaCancelacion], "0.00%")
+
+-- =============================================
+-- MEDIDAS DE TIEMPO Y DURACIÓN
+-- =============================================
+
+-- Promedio de Tiempo de Atención (minutos)
+PromedioTiempoAtencion = 
+AVERAGE(FactInteraccionesPresenciales[DuracionMinutos])
+
+-- Promedio de Tiempo en Cola (minutos)
+PromedioTiempoCola = 
+AVERAGE(FactInteraccionesPresenciales[TiempoCola])
+
+-- Promedio de Tiempo Antes de Cancelar
+PromedioTiempoAntesCancelacion = 
+AVERAGE(FactCancelaciones[TiempoEsperaAntesCancelacion])
+
+-- Tiempo Total de Atención (horas)
+TiempoTotalAtencionHoras = 
+DIVIDE(
+    SUM(FactInteraccionesPresenciales[DuracionMinutos]),
+    60,
+    0
+)
+
+-- Tiempo Promedio de Atención por Tipo de Servicio
+PromedioTiempoPorServicio = 
+CALCULATE(
+    AVERAGE(FactInteraccionesPresenciales[DuracionMinutos]),
+    ALLEXCEPT(DimTipoServicio, DimTipoServicio[NombreServicio])
+)
+
+-- =============================================
+-- MEDIDAS DE SATISFACCIÓN Y CALIDAD
+-- =============================================
+
+-- Satisfacción Promedio
+SatisfaccionPromedio = 
+AVERAGE(FactInteraccionesPresenciales[CalificacionServicio])
+
+-- Satisfacción Promedio (formato)
+SatisfaccionPromedio_Formato = 
+FORMAT([SatisfaccionPromedio], "0.00")
+
+-- Porcentaje de Calificaciones Altas (4-5)
+PorcentajeCalificacionesAltas = 
+DIVIDE(
+    CALCULATE(
+        COUNTROWS(FactInteraccionesPresenciales),
+        FactInteraccionesPresenciales[CalificacionServicio] >= 4
+    ),
+    CALCULATE(
+        COUNTROWS(FactInteraccionesPresenciales),
+        NOT(ISBLANK(FactInteraccionesPresenciales[CalificacionServicio]))
+    ),
+    0
+)
+
+-- Porcentaje de Calificaciones Bajas (1-2)
+PorcentajeCalificacionesBajas = 
+DIVIDE(
+    CALCULATE(
+        COUNTROWS(FactInteraccionesPresenciales),
+        FactInteraccionesPresenciales[CalificacionServicio] <= 2
+    ),
+    CALCULATE(
+        COUNTROWS(FactInteraccionesPresenciales),
+        NOT(ISBLANK(FactInteraccionesPresenciales[CalificacionServicio]))
+    ),
+    0
+)
+
+-- NPS (Net Promoter Score) - Adaptado
+NPS = 
+VAR Promotores = 
+    CALCULATE(
+        COUNTROWS(FactInteraccionesPresenciales),
+        FactInteraccionesPresenciales[CalificacionServicio] >= 5
+    )
+VAR Detractores = 
+    CALCULATE(
+        COUNTROWS(FactInteraccionesPresenciales),
+        FactInteraccionesPresenciales[CalificacionServicio] <= 3
+    )
+VAR Total = 
+    CALCULATE(
+        COUNTROWS(FactInteraccionesPresenciales),
+        NOT(ISBLANK(FactInteraccionesPresenciales[CalificacionServicio]))
+    )
+RETURN
+    DIVIDE(Promotores - Detractores, Total, 0)
+
+-- =============================================
+-- MEDIDAS DE PRODUCTIVIDAD
+-- =============================================
+
+-- Interacciones por Asesor
+InteraccionesPorAsesor = 
+DIVIDE(
+    [InteraccionesCompletadas],
+    [AsesoresActivos],
+    0
+)
+
+-- Capacidad Total de Agencias
+CapacidadTotal = 
+SUMX(
+    FILTER(DimAgencia, DimAgencia[Estado] = "Activa"),
+    DimAgencia[CapacidadAtencion]
+)
+
+-- Capacidad Utilizada
+CapacidadUtilizada = 
+DIVIDE(
+    [TotalInteracciones],
+    [CapacidadTotal],
+    0
+)
+
+-- Capacidad Utilizada %
+CapacidadUtilizada% = 
+FORMAT([CapacidadUtilizada], "0.00%")
+
+-- Productividad por Ventanilla
+ProductividadPorVentanilla = 
+VAR TotalVentanillas = 
+    SUMX(
+        FILTER(DimAgencia, DimAgencia[Estado] = "Activa"),
+        DimAgencia[NumeroVentanillas]
+    )
+RETURN
+    DIVIDE([InteraccionesCompletadas], TotalVentanillas, 0)
+
+-- =============================================
+-- MEDIDAS COMPARATIVAS Y PERÍODO ANTERIOR
+-- =============================================
+
+-- Interacciones Período Anterior
+InteraccionesPeriodoAnterior = 
+CALCULATE(
+    [TotalInteracciones],
+    DATEADD(DimFecha[Fecha], -1, YEAR)
+)
+
+-- Variación vs Período Anterior
+VariacionVsPeriodoAnterior = 
+[TotalInteracciones] - [InteraccionesPeriodoAnterior]
+
+-- Variación % vs Período Anterior
+VariacionPorcentualVsPeriodoAnterior = 
+DIVIDE(
+    [VariacionVsPeriodoAnterior],
+    [InteraccionesPeriodoAnterior],
+    0
+)
+
+-- Satisfacción Período Anterior
+SatisfaccionPeriodoAnterior = 
+CALCULATE(
+    [SatisfaccionPromedio],
+    DATEADD(DimFecha[Fecha], -1, YEAR)
+)
+
+-- Variación Satisfacción
+VariacionSatisfaccion = 
+[SatisfaccionPromedio] - [SatisfaccionPeriodoAnterior]
+
+-- =============================================
+-- MEDIDAS DE TENDENCIA Y RANKING
+-- =============================================
+
+-- Ranking de Agencias por Volumen
+RankingAgenciasPorVolumen = 
+RANKX(
+    ALL(DimAgencia[NombreAgencia]),
+    [TotalInteracciones],
+    ,
+    DESC,
+    DENSE
+)
+
+-- Ranking de Agencias por Satisfacción
+RankingAgenciasPorSatisfaccion = 
+RANKX(
+    ALL(DimAgencia[NombreAgencia]),
+    [SatisfaccionPromedio],
+    ,
+    DESC,
+    DENSE
+)
+
+-- Es Top 5 Agencias
+EsTop5Agencias = 
+IF([RankingAgenciasPorVolumen] <= 5, "Top 5", "Otras")
+
+-- Tendencia Móvil 7 Días
+TendenciaMovil7Dias = 
+CALCULATE(
+    [TotalInteracciones],
+    DATESINPERIOD(
+        DimFecha[Fecha],
+        LASTDATE(DimFecha[Fecha]),
+        -7,
+        DAY
+    )
+)
+
+-- Promedio Móvil 30 Días
+PromedioMovil30Dias = 
+CALCULATE(
+    AVERAGE(FactInteraccionesPresenciales[DuracionMinutos]),
+    DATESINPERIOD(
+        DimFecha[Fecha],
+        LASTDATE(DimFecha[Fecha]),
+        -30,
+        DAY
+    )
+)
+
+-- =============================================
+-- MEDIDAS DE ANÁLISIS POR HORA
+-- =============================================
+
+-- Hora Pico (con mayor volumen)
+HoraPico = 
+VAR HoraMaxima = 
+    MAXX(
+        SUMMARIZE(
+            FactInteraccionesPresenciales,
+            FactInteraccionesPresenciales[HoraInicio]
+        ),
+        [TotalInteracciones]
+    )
+RETURN
+    CALCULATE(
+        MAX(FactInteraccionesPresenciales[HoraInicio]),
+        FILTER(
+            ALL(FactInteraccionesPresenciales[HoraInicio]),
+            [TotalInteracciones] = HoraMaxima
+        )
+    )
+
+-- Interacciones en Hora Pico (9-11 AM)
+InteraccionesHoraPico = 
+CALCULATE(
+    [TotalInteracciones],
+    FILTER(
+        FactInteraccionesPresenciales,
+        HOUR(FactInteraccionesPresenciales[HoraInicio]) >= 9 &&
+        HOUR(FactInteraccionesPresenciales[HoraInicio]) < 11
+    )
+)
+
+-- =============================================
+-- MEDIDAS DE ANÁLISIS DE CANCELACIONES
+-- =============================================
+
+-- Principal Motivo de Cancelación
+PrincipalMotivoCancelacion = 
+FIRSTNONBLANK(
+    TOPN(
+        1,
+        VALUES(FactCancelaciones[MotivoCancelacion]),
+        [TotalCancelaciones],
+        DESC
+    ),
+    1
+)
+
+-- Porcentaje del Principal Motivo
+PorcentajePrincipalMotivo = 
+VAR PrincipalMotivo = [PrincipalMotivoCancelacion]
+RETURN
+    DIVIDE(
+        CALCULATE(
+            [TotalCancelaciones],
+            FactCancelaciones[MotivoCancelacion] = PrincipalMotivo
+        ),
+        [TotalCancelaciones],
+        0
+    )
+
+-- =============================================
+-- MEDIDAS DE SEGMENTACIÓN DE CLIENTES
+-- =============================================
+
+-- Interacciones Clientes VIP
+InteraccionesClientesVIP = 
+CALCULATE(
+    [TotalInteracciones],
+    DimCliente[EsClienteVIP] = TRUE()
+)
+
+-- Porcentaje Clientes VIP
+PorcentajeClientesVIP = 
+DIVIDE(
+    [InteraccionesClientesVIP],
+    [TotalInteracciones],
+    0
+)
+
+-- Satisfacción Clientes VIP
+SatisfaccionClientesVIP = 
+CALCULATE(
+    [SatisfaccionPromedio],
+    DimCliente[EsClienteVIP] = TRUE()
+)
+
+-- Interacciones por Segmento
+InteraccionesPorSegmento = 
+CALCULATE(
+    [TotalInteracciones],
+    ALLEXCEPT(DimCliente, DimCliente[Segmento])
+)
+
+-- =============================================
+-- MEDIDAS DE OBJETIVOS Y METAS
+-- =============================================
+
+-- Meta de Satisfacción (parámetro)
+MetaSatisfaccion = 4.0
+
+-- Cumplimiento Meta Satisfacción
+CumplimientoMetaSatisfaccion = 
+IF([SatisfaccionPromedio] >= [MetaSatisfaccion], "Cumple", "No Cumple")
+
+-- Meta Tasa Cancelación (parámetro)
+MetaTasaCancelacion = 0.10
+
+-- Cumplimiento Meta Cancelación
+CumplimientoMetaCancelacion = 
+IF([TasaCancelacion] <= [MetaTasaCancelacion], "Cumple", "No Cumple")
+
+-- Meta Tiempo Espera (parámetro en minutos)
+MetaTiempoEspera = 15
+
+-- Cumplimiento Meta Tiempo Espera
+CumplimientoMetaTiempoEspera = 
+IF([PromedioTiempoCola] <= [MetaTiempoEspera], "Cumple", "No Cumple")
+
+-- =============================================
+-- MEDIDAS DE INDICADORES VISUALES
+-- =============================================
+
+-- Color Indicador Satisfacción
+ColorIndicadorSatisfaccion = 
+SWITCH(
+    TRUE(),
+    [SatisfaccionPromedio] >= 4.5, "Verde",
+    [SatisfaccionPromedio] >= 3.5, "Amarillo",
+    "Rojo"
+)
+
+-- Color Indicador Cancelación
+ColorIndicadorCancelacion = 
+SWITCH(
+    TRUE(),
+    [TasaCancelacion] <= 0.05, "Verde",
+    [TasaCancelacion] <= 0.15, "Amarillo",
+    "Rojo"
+)
+
+-- Icono Tendencia
+IconoTendencia = 
+SWITCH(
+    TRUE(),
+    [VariacionPorcentualVsPeriodoAnterior] > 0, "↑",
+    [VariacionPorcentualVsPeriodoAnterior] < 0, "↓",
+    "→"
+)
+
+-- =============================================
+-- MEDIDAS CALCULADAS PARA ANÁLISIS AVANZADO
+-- =============================================
+
+-- Índice de Eficiencia (menor tiempo atención = mayor eficiencia)
+IndiceEficiencia = 
+VAR PromedioGeneral = 
+    CALCULATE(
+        AVERAGE(FactInteraccionesPresenciales[DuracionMinutos]),
+        ALL(FactInteraccionesPresenciales)
+    )
+RETURN
+    DIVIDE(PromedioGeneral, [PromedioTiempoAtencion], 0)
+
+-- Score de Rendimiento de Agencia (compuesto)
+ScoreRendimientoAgencia = 
+VAR PesoSatisfaccion = 0.4
+VAR PesoVolumen = 0.3
+VAR PesoCancelacion = 0.3
+VAR SatisfaccionNormalizada = DIVIDE([SatisfaccionPromedio], 5, 0)
+VAR VolumenNormalizado = 
+    DIVIDE(
+        [TotalInteracciones],
+        MAXX(ALL(DimAgencia[NombreAgencia]), [TotalInteracciones]),
+        0
+    )
+VAR CancelacionNormalizada = 1 - [TasaCancelacion]
+RETURN
+    (SatisfaccionNormalizada * PesoSatisfaccion) +
+    (VolumenNormalizado * PesoVolumen) +
+    (CancelacionNormalizada * PesoCancelacion)
+
+-- Texto Dinámico para KPI
+TextoKPIPrincipal = 
+"Total de interacciones: " & FORMAT([TotalInteracciones], "#,##0") &
+" | Satisfacción: " & FORMAT([SatisfaccionPromedio], "0.00") &
+" | Tasa Cancelación: " & FORMAT([TasaCancelacion], "0.0%")
+
+-- =============================================
+-- FIN DE MEDIDAS DAX
+-- =============================================
+
+-- NOTAS DE USO:
+-- 1. Estas medidas deben crearse en Power BI Desktop
+-- 2. Algunas medidas requieren parámetros que se pueden crear con campos calculados
+-- 3. Los formatos de color y visuales dependen de la configuración en Power BI
+-- 4. Se recomienda organizar las medidas en carpetas de visualización
