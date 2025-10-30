@@ -16,7 +16,25 @@ y este proyecto adhiere al [Versionado Semántico](https://semver.org/lang/es/).
 
 ## [Sin Publicar]
 
-### Agregado
+### PASO 10 - ORDEN Y NO-DUPLICACIÓN [2025-10-30]
+#### Agregado
+- **file_checker.py**: Herramienta para verificar duplicación antes de crear archivos
+- **PROJECT_ORGANIZATION.md**: Documentación completa de política de orden
+- **Comandos Make**: check-duplicates, check-organization, clean-duplicates, lint-organization
+- **Reglas .gitignore**: Exclusión de archivos pesados y patrones de duplicación
+
+#### Modificado
+- **Makefile**: Agregados comandos para gestión de organización
+- **.gitignore**: Patrones mejorados para prevenir archivos pesados y duplicados
+
+#### Reglas Implementadas
+- ✅ Verificación obligatoria antes de crear archivos
+- ✅ Documentación concentrada en `docs/` (prohibido .md sueltos)
+- ✅ Exclusión automática de archivos pesados
+- ✅ Herramientas de detección de duplicados
+
+### PASO 9 - REGLAS DE TESTING Y LIMPIEZA [2025-10-30]
+#### Agregado
 - Sistema completo de testing y limpieza
 - Reglas estrictas: tests solo en `tests/`, limpieza con `make clean`
 - Suite de tests para versionado con 9 tests automatizados

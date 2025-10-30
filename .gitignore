@@ -104,3 +104,24 @@ audit_backup*/
 
 # Node.js (si se usa para alguna herramienta)
 node_modules/
+
+# ARCHIVOS PESADOS (Power BI - Paso 10)
+# Evita archivos grandes en el repo
+*.pbix.large
+*.pdf
+*.xlsx
+*.csv
+# Excepto datos de prueba pequeños en tests/
+!tests/data/*.csv
+!tests/data/*.xlsx
+
+# PREVENCIÓN DE DUPLICADOS (Paso 10)
+# Archivos temporales de desarrollo
+*.duplicate
+*.copy
+*_backup.*
+*_old.*
+*_temp.*
+duplicate_*
+temp_*
+*_v[0-9]*.*

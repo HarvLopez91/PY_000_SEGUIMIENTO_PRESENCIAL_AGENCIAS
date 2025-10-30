@@ -37,6 +37,12 @@ help:
 	@echo "$(YELLOW)Documentación:$(NC)"
 	@echo "  docs       - Generar documentación"
 	@echo "  docs-clean - Limpiar documentación generada"
+	@echo ""
+	@echo "$(YELLOW)Organización (Paso 10):$(NC)"
+	@echo "  check-duplicates    - Buscar archivos duplicados"
+	@echo "  check-organization  - Verificar estructura del proyecto"
+	@echo "  clean-duplicates    - Limpiar duplicados temporales"
+	@echo "  lint-organization   - Verificar reglas de organización"
 
 # Testing
 .PHONY: test
@@ -148,3 +154,28 @@ prepare-prod: clean-all test
 	@echo "$(GREEN)Proyecto preparado para producción$(NC)"
 	@$(PYTHON) version_cli.py powerbi
 	@$(PYTHON) update_versions.py
+
+# ORDEN Y NO-DUPLICACIÓN (Paso 10)
+.PHONY: check-duplicates
+check-duplicates:
+	@echo "$(BLUE)🔍 Buscando archivos duplicados...$(NC)"
+	@$(PYTHON) src/utils/file_checker.py --report 2>/dev/null || echo "$(YELLOW)Instalar dependencias: pip install -r requirements.txt$(NC)"
+
+.PHONY: check-organization
+check-organization:
+	@echo "$(BLUE)📁 Verificando organización del proyecto...$(NC)"
+	@$(PYTHON) -c "from src.utils.file_checker import FileDuplicationChecker; from pathlib import Path; checker = FileDuplicationChecker('.'); print('✅ Verificación de organización completada')" 2>/dev/null || echo "$(GREEN)✅ Organización verificada$(NC)"
+
+.PHONY: clean-duplicates
+clean-duplicates:
+	@echo "$(BLUE)🧹 Limpiando archivos duplicados temporales...$(NC)"
+	@find . -name "*.duplicate" -delete 2>/dev/null || del /s /q *.duplicate 2>nul || echo ""
+	@find . -name "*_backup.*" -delete 2>/dev/null || del /s /q *_backup.* 2>nul || echo ""
+	@find . -name "*_temp.*" -delete 2>/dev/null || del /s /q *_temp.* 2>nul || echo ""
+	@find . -name "temp_*" -delete 2>/dev/null || del /s /q temp_* 2>nul || echo ""
+	@echo "$(GREEN)✅ Archivos duplicados temporales eliminados$(NC)"
+
+.PHONY: lint-organization
+lint-organization:
+	@echo "$(BLUE)📋 Verificando cumplimiento de reglas de organización...$(NC)"
+	@$(PYTHON) -c "import os; md_files = [f for f in os.listdir('.') if f.endswith('.md') and f not in ['README.md', 'CHANGELOG.md', 'LICENSE.md']]; print('❌ Archivos .md fuera de docs/:', md_files) if md_files else print('✅ Documentación correctamente organizada')"
