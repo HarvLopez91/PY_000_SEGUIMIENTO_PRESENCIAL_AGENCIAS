@@ -45,7 +45,7 @@ El proyecto incluye:
 
 #### Paso 1: Revisar Documentación
 Comience leyendo:
-1. [README.md](../README.md) - Visión general del proyecto
+1. [README.md](README.md) - Visión general del proyecto
 2. [docs/TECHNICAL_DOCUMENTATION.md](docs/TECHNICAL_DOCUMENTATION.md) - Arquitectura y modelo de datos
 
 #### Paso 2: Preparar Ambiente
@@ -78,8 +78,8 @@ Siga las instrucciones completas en [docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_G
 ```
 PY_000_SEGUIMIENTO_PRESENCIAL_AGENCIAS/
 │
-├── README.md                       # Este archivo - Visión general
-├── QUICK_START.md                  # Guía de inicio rápido
+├── README.md                       # Visión general del proyecto
+├── QUICK_START.md                  # Guía de inicio rápido (este archivo)
 ├── .gitignore                      # Archivos a ignorar en Git
 ├── requirements.txt                # Dependencias Python
 │
@@ -274,8 +274,8 @@ El dashboard implementa **Row-Level Security (RLS)** con 4 roles:
 
 ### 📊 Estadísticas del Proyecto
 
-- **Total de líneas de código/documentación**: 4,130+
-- **Archivos de documentación**: 4
+- **Total de líneas de código/documentación**: 4,420+
+- **Archivos de documentación**: 5 (incluyendo Quick Start)
 - **Medidas DAX**: 50+
 - **Páginas del dashboard**: 6
 - **Tablas del modelo**: 7
